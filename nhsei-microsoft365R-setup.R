@@ -1,5 +1,8 @@
 # Instructions for connecting R to NHSEI Microsoft 365
 # See also the vignettes here: https://cran.r-project.org/web/packages/Microsoft365R/index.html
+# This uses the here package for ease of referring to files but not necessary
+
+library(here)
 
 # Install
 
@@ -25,11 +28,13 @@ site <- get_sharepoint_site(site_url = 'https://nhsengland.sharepoint.com/exampl
 
 # Writing a csv e.g. to a Restricted Library in the Collaboration Drive
 
-site$list_drives()
 reslib <- site$get_drive('Restricted Library')
-write.csv(mtcars, file.path(tempdir(), "mtcars"))
-mtcars_csv <- file.path(tempdir(), "mtcars.csv")
-reslib$upload_file(mtcars_csv, dest = "mtcars.csv")
+write.csv(mtcars, here('mtcars_upload.csv'))
+reslib$upload_file(here('mtcars_upload.csv'), dest = "mtcars_upload.csv")
+
+# Reading the csv back
+
+reslib$download_file('mtcars_upload.csv', dest = here('mtcars_download.csv'))
 
 # Posting a message to a Teams channel
 
