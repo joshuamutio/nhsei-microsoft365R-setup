@@ -62,4 +62,5 @@ chats_properties$viewpoint.lastMessageReadDateTime <- strptime(chats_properties$
 chats_properties
 
 chat <- get_chat("ExampleChatID")
+chat$list_members()
 chat$send_message("Hello world")
