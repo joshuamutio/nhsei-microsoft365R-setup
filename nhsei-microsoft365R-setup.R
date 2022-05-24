@@ -1,8 +1,9 @@
 # Instructions for connecting R to NHSEI Microsoft 365
 # See also the vignettes here: https://cran.r-project.org/web/packages/Microsoft365R/index.html
-# This uses the here package for ease of referring to files but not necessary
+# This uses the here and tidyverse packages for ease, but not necessary
 
 library(here)
+library(tidyverse)
 
 # Install
 
@@ -43,3 +44,22 @@ team <- get_team("Example Team")
 channel <- team$get_channel("General")
 channel$send_message("Hello world")
 
+# Posting to Teams chat
+# Chat metadata is nested; the following code will extract and combine the relevant properties for ease
+
+chats <- list_chats()
+
+chats_properties <-
+  lapply(chats, function(x) {
+    x$properties %>% unlist() %>% as.data.frame() %>% t() %>% as.tibble()
+  }) %>% bind_rows() %>%
+  relocate(topic)
+
+chats_properties$createdDateTime <- strptime(chats_properties$createdDateTime, "%Y-%m-%dT%H:%M:%OSZ")
+chats_properties$lastUpdatedDateTime <- strptime(chats_properties$lastUpdatedDateTime, "%Y-%m-%dT%H:%M:%OSZ")
+chats_properties$viewpoint.lastMessageReadDateTime <- strptime(chats_properties$viewpoint.lastMessageReadDateTime, "%Y-%m-%dT%H:%M:%OSZ")
+
+chats_properties
+
+chat <- get_chat("ExampleChatID")
+chat$send_message("Hello world")
